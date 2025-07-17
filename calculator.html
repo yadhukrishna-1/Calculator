@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="cal-style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+</head>
+
+<body>
+    <div class="calculator container bg-dark mt-5 rounded">
+        <input class="w-100 my-3 rounded-pill text-end px-4" type="text" id="display" readonly>
+        <div class="buttons">
+
+            <div class="row my-3">
+                <div class="col"><button class="btn btn-secondary" onclick="btn('7')">7</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('8')">8</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('9')">9</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="opp('/')">/</button></div>
+            </div>
+
+            <div class="row my-3">
+                <div class="col"><button class="btn btn-secondary" onclick="btn('4')">4</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('5')">5</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('6')">6</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="opp('*')">*</button></div>
+            </div>
+
+            <div class="row my-3">
+                <div class="col"><button class="btn btn-secondary" onclick="btn('1')">1</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('2')">2</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('3')">3</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="opp('-')">-</button></div>
+            </div>
+
+            <div class="row my-3">
+                <div class="col"><button class="btn btn-secondary" onclick="btn('0')">0</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="btn('.')">.</button></div>
+                <div class="col"><button class="equal btn btn-success" onclick="equal()">=</button></div>
+                <div class="col"><button class="btn btn-secondary" onclick="opp('+')">+</button></div>
+            </div>
+            <div class="row">
+                <div class="col"><button class="btn btn-danger my-3" onclick="clearDisplay()">Clear</button></div>
+                <div class="col"><button class="btn btn-secondary my-3" onclick="back()">BK-SP</button></div>
+
+                <div class="col">
+                    <div class="row">
+                        <div class="col"><button class="btn btn-secondary my-3" onclick="histo()">history</button></div>
+                        <div class="col"><button class="btn btn-secondary my-3" onclick="ClHisto()">clear history</button></div>
+                                
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="border container  h-100 bg-secondary text-white" id="block"></div>
+
+    <script>
+        let number = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.']
+        let opper = ['/', '*', '-', '+']
+        let displaying = ""
+        let result = false
+        let history = [];
+
+
+
+        // Mouse method
+        function btn(data) {
+            if (document.getElementById('display').value == "Error") {
+                clearDisplay();
+            }
+            if (result) {
+                displaying = ""
+                result = false
+            }
+            displaying += data
+            document.getElementById('display').value = displaying
+        }
+
+        function opp(operation) {
+            if (document.getElementById('display').value == "Error") {clearDisplay();}
+            
+            if (result) {
+                displaying = document.getElementById('display').value + operation
+                result = false
+            }
+            else {
+                displaying += operation
+            }
+            document.getElementById('display').value = displaying
+        }
+
+        function equal() {
+            try {
+                let total = eval(displaying)
+                document.getElementById('display').value = total
+                result = true
+
+                history.push(displaying + " = " + total);
+            }
+            catch {
+                document.getElementById('display').value = 'Error'
+            }
+
+        }
+
+        function back() {
+            if (result) {
+                clearDisplay();
+            } else {
+                displaying = displaying.slice(0, -1);
+                document.getElementById('display').value = displaying;
+            }
+        }
+
+
+
+
+
+
+
+
+
+        // key bord method
+        document.addEventListener("keydown", function (btn) {
+
+            let displaying_value = document.getElementById('display').value
+            if (displaying_value === 'Error') {
+                clearDisplay()
+            }
+
+            // number
+            if (number.includes(btn.key)) {
+                if (result) {
+                    displaying = ""
+                    result = false
+                }
+                displaying += btn.key
+                document.getElementById('display').value = displaying;
+            }
+
+            // operation
+            if (opper.includes(btn.key)) {
+                if (result) {
+                    displaying = document.getElementById('display').value + btn.key
+                    result = false
+                } else {
+                    displaying += btn.key
+                }
+                document.getElementById('display').value = displaying
+
+            }
+
+            // Enter (equal)
+            if (btn.key == "Enter") {
+                try {
+                    let values = document.getElementById('display').value
+                    let total = math.evaluate(values)
+                    document.getElementById('display').value = total;
+                    result = true
+                    
+                history.push(displaying + " = " + total);
+
+                }
+                catch {
+                    document.getElementById('display').value = 'Error'
+                    result = true
+                }
+            }
+            // Backspace
+            if (btn.key == "Backspace") {
+                if (result) {
+                    clearDisplay();
+                } else {
+                    displaying = displaying.slice(0, -1);
+                    document.getElementById('display').value = displaying;
+                }
+            }
+
+        })
+
+
+
+        function histo(){
+            if (history.length == 0){
+                document.getElementById('display').value = 'No history'
+            }
+            else {
+                document.getElementById('display').value = history[history.length - 1]
+
+                let html = "<ul>";
+                for (let i = 0; i < history.length; i++) {
+                    html += `<li>${history[i]}</li>`;
+                }
+                html += "</ul>";
+                document.getElementById('block').innerHTML = html;
+                console.log(html)
+            }
+            result= true
+
+        }
+
+        function ClHisto() {
+            history = [];
+            document.getElementById('display').value = 'History Cleared'
+            document.getElementById('block').innerHTML = ""
+            result= true
+        }
+
+        function clearDisplay() {
+            displaying = ""
+            result = false;
+            document.getElementById('display').value = ""
+        }
+
+    </script>
+</body>
+
+</html>
